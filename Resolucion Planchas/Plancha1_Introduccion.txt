@@ -1,0 +1,152 @@
+RESOLUCION DE LA PLANCHA 1 DE EJERCICIOS - SISTEMAS OPERATIVOS 2 - LCC 2026
+
+PREGUNTA 1: POR QUÉ SE PREFIERE EMULAR UNA CPU EN VEZ DE UTILIZAR DIRECTAMENTE LA CPU EXISTENTE?
+
+    Emular una CPU garantiza que trabajemos sobre una arquitectura suficientemente
+    sencilla para la cursada y nos deja ocultar detalles de bajo nivel que no aportan al objetivo pedagógico. 
+
+    Al tener el control del hardware simulado, podemos instruir al sistema para forzar interrupciones, excepciones o fallos
+    sin arriesgar el equipo físico y con resultados reproducibles en cualquier PC.
+
+    Esa capa de abstracción protege al anfitrión y ayuda a concentrarnos en la lógica
+    del sistema operativo: planificación, gestión de memoria o manejo de excepciones, sin distraernos con la complejidad de x86-64.
+
+    En definitiva, la emulación brinda un laboratorio seguro y didáctico donde cada concepto se puede ilustrar con precisión y sin depender de configuraciones
+    específicas del procesador real.
+
+PREGUNTA 2: CUÁNTA MEMORIA TIENE LA MÁQUINA SIMULADA PARA NACHOS?
+
+    La cantidad de memoria física simulada viene dada por la constante MEMORY_SIZE = NUM_PHYS_PAGES * PAGE_SIZE. 
+
+    El Nachos fija NUM_PHYS_PAGES = 32 y PAGE_SIZE = SECTOR_SIZE, donde el SECTOR_SIZE es de 128 bytes.
+
+    Entonces la máquina emulada tiene 32 páginas de 128 bytes, es decir, 4.096 bytes de memoria disponibles para los procesos de usuario.
+
+PREGUNTA 3: QUÉ MODIFICARÍA PARA CAMBIAR LA CANTIDAD DE MEMORIA?
+    
+
+PREGUNTA 3: ¿QUÉ MODIFICARÍA PARA CAMBIAR LA CANTIDAD DE MEMORIA?
+
+    -Para modificar la cantidad de memoria, entendemos que lo mas correcto sería simplemente variar el numero de paginas (NUM_PHYS_PAGES).
+
+    -Otra forma sin tocar el código es correr nachos -m N, que hace que el kernel cree N páginas físicas. 
+        No es ideal porque depende de cada corrida y no queda documentada en la configuración fija.
+
+PREGUNTA 4: DE QUÉ TAMANIO ES UN DISCO?
+    El tamanio del disco viene determinado por la cantidad de sectores que tiene. Esto sería: NUM_SECTORS = SECTORES_PER_TRACK * NUM_TRACKS.
+        Luego SECTORES_PER_TRACK = 32 y NUM_TRACKS = 32, por lo que NUM_SECTORS = 1024
+    
+    Por lo que el disco tiene tamaño: NUM_SECTORS * SECTOR_SIZE = 1024 * 128 = 131072 bytes
+
+PREGUNTA 5: CUÁNTAS INSTRUCCIONES DE MIPS SIMULA LA MAQUINA VIRTUAL DE NACHOS?
+    En la máquina virtual se simulan 59 instrucciones, especificadas en el archivo mips.sim.cc de la carpeta machine.
+
+PREGUNTA 6.1: EN QUE ARCHIVOS ESTA DEFINIDA LA FUNCION MAIN?
+    Para realizar esta consulta podemos simplemente ejecutar el comando rg -n "main\(" (Instalar: sudo apt install ripgrep):
+
+    Nachos/nachos-main/code/userland/touch.c
+    9:main(int argc, char *argv[])
+
+    Nachos/nachos-main/code/bin/readnoff.c
+    28:main(int argc, char *argv[])
+
+    Nachos/nachos-main/code/userland/tinyshell.c
+    5:main(void)
+
+    Nachos/nachos-main/code/bin/out.c
+    172:main(int argc, char *argv[])
+
+    Nachos/nachos-main/code/userland/sort.c
+    18:main(void)
+
+    Nachos/nachos-main/code/userland/shell.c
+    101:main(void)
+
+    Nachos/nachos-main/code/userland/matmult.c
+    20:main(void)
+
+    Nachos/nachos-main/code/bin/main.c
+    34:main(int argc, char *argv[])
+
+    Nachos/nachos-main/code/userland/halt.c
+    16:main(void)
+
+    Nachos/nachos-main/code/threads/main.cc
+    111:main(int argc, char **argv)
+
+    Nachos/nachos-main/code/userland/filetest.c
+    16:main(void)
+
+    Nachos/nachos-main/code/userland/echo.c
+    32:main(int argc, char *argv[])
+
+    Nachos/nachos-main/code/bin/fuse/nachosfuse.c
+    164:main(int argc, char *argv[])
+    166:    return fuse_main(argc, argv, &OPERATIONS, NULL);
+
+    Nachos/nachos-main/code/bin/disasm.c
+    36:main(int argc, char *argv[])
+
+    Nachos/nachos-main/code/bin/coff2noff.c
+    84:main(int argc, char *argv[])
+
+    Nachos/nachos-main/code/bin/coff2flat.c
+    77:main(int argc, char *argv[])
+
+
+PREGUNTA 6.2: EN QUE ARCHIVOS ESTÁ DEFINIDA LA FUNCION MAIN DEL EJECUTABLE NACHOS DEL DIRECTORIO USERPROG?
+    La funcion Main del ejecutable principal de Nachos esta definido en el archivo main.cc de la carpeta threads (linea 111).
+
+PREGUNTA 7: (VER ENUNCIADO EN LA PLANCHA - MUY LARGO JEJ)
+    * main (definido en main.cc)
+
+        ** Copy(definido en fs_test.cc)
+            *** fopen, fseek, ftell, fread, fclose y printf (libreria estandar)
+            *** DEBUG (Macro definida en lib/debug.cc)
+            *** ASSERT (Macro definida en lib/utility.hh)
+            *** Create y Open (definidos en filesys/file_system.cc)
+
+        ** Print(definido en fs_test.cc)
+            *** ASSERT (Macro definida en lib/utility.hh)
+            *** Open (definido en filesys/file_system.cc)
+            *** fprintf y printf (Libreria estandar)
+
+        ** PerformanceTest (definido fs_test.cc)
+            *** printf (libreria estandar)
+            *** stats->Print (machine/statistics.cc)
+            *** FileWrite y FileRead (definidas en fs_test.cc)
+            *** fileSystem->Remove (metodo de filesys/file_sytem.cc)
+
+        ** StartProcess (definida en userprog/prog_test.cc)
+            *** ASSERT (Macro definida en lib/utility.hh)
+            *** fileSystem->Open (definido en filesys/file_system.cc)
+            *** AddressSpace (userprog/adress_space.cc)
+            *** currentThread->space (campo de threads/thread.hh)
+            *** space->InitRegisters y space->RestoreState (adress_space.cc)
+            *** machine->Run (machine/machine.cc)
+
+        ** ConsoleTest (definida en userprog/prog_test.cc)
+            *** new Console (machine/console.cc)
+            *** ReadAvail y WriteDone (prog_test.cc)
+            *** Console->Getchar y Console->Putchar (machine/console.cc)
+
+PREGUNTA 8: QUÉ EFECTO HACEN LAS MACROS ASSERT Y DEBUG DEFINIDAS EN lib/utility.hh?
+    ASSERT: es la macro definida para validar suposiciones.
+        Si la condición falla imprime el predicado, el archivo, la línea y aborta el programa.
+    
+    DEBUG se encarga de imprimir mensajes de depuracion. Verifica si una bandera esta
+        habilitada y en tal caso muestra la informacion correspondiente.
+
+PREGUNTA 9: COMENTE EL EFECTO DE LAS DISTINTAS BANDERAS DE DEPURACION:
+    * `+` -- turn on all debug messages.
+    * `t` -- thread system.
+    * `s` -- semaphores, locks, and conditions.
+    * `i` -- interrupt emulation.
+    * `m` -- machine emulation (requires *USER_PROGRAM*).
+    * `d` -- disk emulation (requires *FILESYS*).
+    * `f` -- file system (requires *FILESYS*).
+    * `a` -- address spaces (requires *USER_PROGRAM*).
+    * `e` -- exception handling (requires *USER_PROGRAM*).
+
+PREGUNTA 10: DONDE ESTÁN DEFINIDAS LAS CONSTANTES USER_PROGRAM, FILESYS_NEEDED Y FILESYS_STUB?
+    Estan definidas en los archivos Makefile
