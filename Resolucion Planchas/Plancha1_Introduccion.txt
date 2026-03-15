@@ -150,3 +150,91 @@ PREGUNTA 9: COMENTE EL EFECTO DE LAS DISTINTAS BANDERAS DE DEPURACION:
 
 PREGUNTA 10: DONDE ESTÁN DEFINIDAS LAS CONSTANTES USER_PROGRAM, FILESYS_NEEDED Y FILESYS_STUB?
     Estan definidas en los archivos Makefile
+
+PREGUNTA 11: QUÉ LINEA DE COMANDOS SOPORTA NACHOS? QUÉ EFECTO HACE LA OPCION -rs?
+
+    La informacion respecto a los comandos soportados en NACHOS se encuentra en el archivo main.cc de la carpeta threads:
+
+    General options
+    ---------------
+    * `-d`  -- causes certain debugging messages to be printed (cf.`utility.hh`).
+    * `-do` -- enables options that modify the behavior when printing debugging messages.
+    * `-rs` -- causes `Yield` to occur at random (but repeatable) spots.
+    * `-z`  -- prints version and copyright information, and exits.
+    * `-m`  -- size of emulated physical memory (in pages)
+    * `-i`  -- show system information
+    
+    *THREADS* options
+    -----------------
+    * `-tt`  -- tests the threading subsystem; the user is asked to choose a test to run from a collection of available tests.
+    * `-tN` -- runs the Nth test.
+
+    *USER_PROGRAM* options
+    ----------------------
+    * `-s`  -- causes user programs to be executed in single-step mode.
+    * `-x`  -- runs a user program.
+    * `-tc` -- tests the console.
+    
+    *FILESYS* options
+    -----------------
+    * `-f`  -- causes the physical disk to be formatted.
+    * `-cp` -- copies a file from UNIX to Nachos.
+    * `-pr` -- prints a Nachos file to standard output.
+    * `-rm` -- removes a Nachos file from the file system.
+    * `-ls` -- lists the contents of the Nachos directory.
+    * `-D`  -- prints the contents of the entire file system.
+    * `-c`  -- checks the filesystem integrity.
+    * `-tf` -- tests the performance of the Nachos file system.
+
+    Haciendo enfasis en -rs(expresado anteriormente) tenemos que:
+        Basicamente -rs fija la semilla del random scheduler y obliga al timer a provocar
+            cambios de contexto en momentos impredecibles,
+            de modo que la ejecución del kernel simule condiciones de carrera más exigentes.
+
+PREGUNTA 12: 
+    Modificamos threads/sys_info.cc para que nachos -i muestre los valores correspondientes
+    de memoria y disco en lugar de los string "UNKNOWN". 
+    Lo cual resulto de la siguiente manera:
+    ****************************************************
+        /Nachos/nachos-main/code/threads$ ./nachos -i
+        System information.
+
+        General:
+          Nachos release: Nachos unr22a.
+          Option definitions: THREADS DFS_TICKS_FIX 
+
+        Memory:
+          Page size: 128 bytes.
+          Number of pages: 32.
+          Number of TLB entries: 4.
+          Memory size: 4096 bytes.
+
+        Disk:
+          Sector size: 128 bytes.
+          Sectors per track: 32.
+          Number of tracks: 32.
+          Number of sectors: 1024.
+          Disk size: 131072 bytes.
+
+        Filesystem:
+          Sectors per header: 30.
+          Maximum file size: 3840 bytes.
+          File name maximum length: 9.
+          Free sectors map size: 128 bytes.
+          Maximum number of dir-entries: 10.
+          Directory file size: 200 bytes.
+    ****************************************************
+
+PREGUNTA 13: CUAL ES LA DIFERENCIA ENTRE LAS CLASES LIST Y SYNCHLIST?
+    List es el contenedor básico en lib/list.hh: es una lista simplemente enlazada, 
+    sin ningún resguardo de concurrencia. Permite Append, Prepend, Pop, SortedInsert, 
+    borrar un elemento, iterar con Apply, consultar si contiene un ítem, etc,
+    pero no hace nada para coordinar accesos desde varios hilos al mismo tiempo.
+    
+    SynchList (en threads/synch_list.hh) envuelve a List con una Lock y una Condition para que sea segura en el kernel.
+    Cada operación (Append, Pop, Apply) adquiere lock, y Pop además espera en listEmpty si la lista está vacía,
+    despertando cuando alguien hace Append. 
+    
+    Es decir, SynchList garantiza acceso exclusivo y bloquea al hilo que quiere 
+    sacar un elemento hasta que haya algo disponible, mientras que List no tiene 
+    ninguna lógica de sincronización.

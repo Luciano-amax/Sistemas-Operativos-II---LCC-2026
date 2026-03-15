@@ -1,4 +1,10 @@
 #include "sys_info.hh"
+// Modificación ejercicio 12: se agregan estos headers para usar constantes de memoria y disco.
+#include "machine/disk.hh"
+#include "machine/mmu.hh"
+#include "threads/system.hh"
+// Fin de la modificacion de estos headers del ejercicio 12 :]
+
 #include "copyright.h"
 #include "filesys/directory_entry.hh"
 #include "filesys/file_system.hh"
@@ -44,19 +50,37 @@ General:\n\
   Nachos release: %s %s.\n\
   Option definitions: %s\n",
       PROGRAM, VERSION, OPTIONS);
+    // Modificación para el ejercicio 12 (PLANCHA 1): mostrar la capacidad real de memoria.
+    unsigned pageSize = PAGE_SIZE;
+    unsigned numPages = DEFAULT_NUM_PHYS_PAGES;
+    unsigned tlbEntries = TLB_SIZE;
+#ifdef USER_PROGRAM
+    if (machine != nullptr) {
+        numPages = machine->GetNumPhysicalPages();
+    }
+#endif
+    unsigned memorySize = numPages * pageSize;
     printf("\n\
 Memory:\n\
-  Page size: UNKNOWN bytes.\n\
-  Number of pages: UNKNOWN.\n\
-  Number of TLB entries: UNKNOWN.\n\
-  Memory size: UNKNOWN bytes.\n");
+  Page size: %u bytes.\n\
+  Number of pages: %u.\n\
+  Number of TLB entries: %u.\n\
+  Memory size: %u bytes.\n",
+      pageSize, numPages, tlbEntries, memorySize);
+    // Modificación para el ejercicio 12 (PLANCHA 1): mostrar los parámetros reales del disco.
+    unsigned sectorSize = SECTOR_SIZE;
+    unsigned sectorsPerTrack = SECTORS_PER_TRACK;
+    unsigned numTracks = NUM_TRACKS;
+    unsigned numSectors = NUM_SECTORS;
+    unsigned diskSize = numSectors * sectorSize;
     printf("\n\
 Disk:\n\
-  Sector size: UNKNOWN bytes.\n\
-  Sectors per track: UNKNOWN.\n\
-  Number of tracks: UNKNOWN.\n\
-  Number of sectors: UNKNOWN.\n\
-  Disk size: UNKNOWN bytes.\n");
+  Sector size: %u bytes.\n\
+  Sectors per track: %u.\n\
+  Number of tracks: %u.\n\
+  Number of sectors: %u.\n\
+  Disk size: %u bytes.\n",
+      sectorSize, sectorsPerTrack, numTracks, numSectors, diskSize);
     printf("\n\
 Filesystem:\n\
   Sectors per header: %u.\n\
