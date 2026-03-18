@@ -4,9 +4,11 @@
 /// All rights reserved.  See `copyright.h` for copyright notice and
 /// limitation of liability and disclaimer of warranty provisions.
 
+//Ejercicio 18: resolver usando semaforos
 
-#include "thread_test_garden.hh"
+#include "thread_test_garden2.hh"
 #include "system.hh"
+#include "semaphore.hh"
 
 #include <stdio.h>
 
@@ -15,6 +17,7 @@ static const unsigned NUM_TURNSTILES = 2;
 static const unsigned ITERATIONS_PER_TURNSTILE = 50;
 static bool done[NUM_TURNSTILES];
 static int count;
+static Semaphore countMutex("countMutex", 1);  // Semáforo para proteger el acceso a count
 
 static void
 Turnstile(void *n_)
@@ -22,12 +25,13 @@ Turnstile(void *n_)
     unsigned *n = (unsigned *) n_;
 
     for (unsigned i = 0; i < ITERATIONS_PER_TURNSTILE; i++) {
-        //Ejercicio 17: mover la declaracion de temp para asegurar que el hilo actual es el unico en posesion de la variable.
-        currentThread->Yield();
+        countMutex.P();  // Proteger la operación atómica de leer e incrementar count
         int temp = count;
-        printf("Turnstile %u yielding with temp=%u.\n", *n, temp);
-        printf("Turnstile %u back with temp=%u.\n", *n, temp);
         count = temp + 1;
+        countMutex.V();  // Liberar después de la modificación
+        printf("Turnstile %u yielding with temp=%u.\n", *n, temp);
+        currentThread->Yield();
+        printf("Turnstile %u back with temp=%u.\n", *n, temp);
         currentThread->Yield();
     }
     printf("Turnstile %u finished. Count is now %u.\n", *n, count);
@@ -35,7 +39,7 @@ Turnstile(void *n_)
 }
 
 void
-ThreadTestGarden()
+ThreadTestGarden2()
 {
     //Launch a new thread for each turnstile 
     //(except one that will be run by the main thread)

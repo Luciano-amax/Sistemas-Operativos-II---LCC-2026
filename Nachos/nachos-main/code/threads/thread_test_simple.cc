@@ -51,6 +51,8 @@ SimpleThread(void *id_)
 
     for (unsigned num = 0; num < 10; num++) {
 #ifdef SEMAPHORE_TEST
+        //Ejercicio 16: agregar linea de depuración para mostrar que el hilo va a hacer P() sobre el semáforo
+        DEBUG('s', "Thread `%s` doing P()\n", currentThread->GetName());
         sem15.P();
         DEBUG('s', "Thread `%s` acquired semaphore\n", currentThread->GetName());
 #endif
@@ -59,6 +61,8 @@ SimpleThread(void *id_)
 #ifdef SEMAPHORE_TEST
         DEBUG('s', "Thread `%s` releasing semaphore\n", currentThread->GetName());
         sem15.V();
+        //Ejercicio 16: agregar linea de depuración para mostrar que el hilo hizo V() sobre el semáforo
+        DEBUG('s', "Thread `%s` did V()\n", currentThread->GetName());
 #else
         currentThread->Yield();
 #endif
